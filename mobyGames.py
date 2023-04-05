@@ -9,7 +9,6 @@ def GetGameList(APIKEY):
     gamesDict = {}
     genres = [("Horror", 83 ), ("Thriller", 123), ("Comedy", 120), ("Romance",122), ("Action", 1)]
     for genre in genres:
-        #clear cache
         #wait 1 second to avoid rate limiting
         time.sleep(1)
         url = "https://api.mobygames.com/v1/games?format=id&genre=" + str(genre[1]) + "&limit=100&api_key=" + APIKEY
