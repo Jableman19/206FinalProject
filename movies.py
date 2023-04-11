@@ -13,9 +13,9 @@ import re
 
 def get_genre_ids(api_key):
     genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
-    response = requests.get(url="https://api.themoviedb.org/3/genre/movie/list?api_key=<<api_key>>&language=en-US")
+    response = requests.get(url="https://api.themoviedb.org/3/genre/movie/list?api_key=" + api_key + "&language=en-US")
     #should get a json of genres: https://developers.themoviedb.org/3/genres/get-movie-list
-    dict = json.loads(response)
+    dict = json.loads(response.text)
     id_to_name = {}
     name_to_id = {}
     for genre in dict["genres"]:
@@ -60,7 +60,7 @@ def avg_calc(scores_nested):
     return avg_dict
 
 def main():
-    api_key = "some_key"
+    api_key = "ccaddcfc821617cf6afe4ed671bc203a"
     id_to_name, name_to_id = get_genre_ids(api_key)
     print(id_to_name)
     scores_nested = scrape_movies(id_to_name, api_key)
