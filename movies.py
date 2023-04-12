@@ -63,28 +63,34 @@ def avg_calc(scores_nested): #scores nested is {genre_name : [total_score, numbe
 
 def main():
     api_key = "ccaddcfc821617cf6afe4ed671bc203a"
+    genre_list = ["Horror", "Thriller", "Comedy", "Romance", "Action"]
     id_to_name, name_to_id = get_genre_ids(api_key)
     scores_nested, movies_per_genre = scrape_movies(id_to_name, api_key)
     avg_calc_dict = avg_calc(scores_nested)
+
+    # if len(avg_calc_dict) != 5:
+    #     print('length not 5')
+    # for genre in genre_list: 
+    #     if len(movies_per_genre[genre]) != 20:
+    #         print('not length 20')
 
     conn = sqlite3.connect('movies.db')
     c = conn.cursor()
     #claims that the table already exists...
     c.execute('''CREATE TABLE IF NOT EXISTS Genre_averages (id INTEGER, genre TEXT, score NUMERIC)''')
-    genre_list = ["Horror", "Thriller", "Comedy", "Romance", "Action"]
     for genre in genre_list: #genre should be the genre name
-            print(name_to_id[genre])
-            print(genre)
-            print(avg_calc_dict[genre])
-            print('===')
+            # print(name_to_id[genre])
+            # print(genre)
+            # print(avg_calc_dict[genre])
+            # print('====')
             c.execute("INSERT OR IGNORE INTO Genre_averages VALUES (?, ?, ?)", (name_to_id[genre], genre, avg_calc_dict[genre]))
-    conn.commit()
 
     c.execute('''CREATE TABLE IF NOT EXISTS Movies (id INTEGER, name TEXT, genre TEXT, score NUMERIC)''')
     for genre in genre_list:
         for movie in movies_per_genre[genre]:
-            c.execute("INSERT OR IGNORE INTO Movies VALUES (?, ?, ?)", (movie[1], genre, movie[2],)) #how much does the id matter :)
+            c.execute("INSERT OR IGNORE INTO Movies VALUES (?, ?, ?, ?)", (movie[0], movie[1], genre, movie[2],)) #how much does the id matter :)
     conn.commit()
+    conn.close()
         
 if __name__ == "__main__":
     main()
