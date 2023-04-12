@@ -13,11 +13,7 @@ import re
 def get_genre_ids(api_key):
     genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
     response = requests.get(url="https://api.themoviedb.org/3/genre/movie/list?api_key=" + api_key + "&language=en-US")
-    #should get a json of genres: https://developers.themoviedb.org/3/genres/get-movie-list
     dict = json.loads(response.text)
-    # print("====")
-    # print(dict)
-    # print("====")
     id_to_name = {}
     name_to_id = {}
     for genre in dict['genres']:
@@ -26,37 +22,37 @@ def get_genre_ids(api_key):
             name_to_id[genre['name']] = genre['id'] 
     return id_to_name, name_to_id
 
-#base_url/endpoint with parameters
-#movie list- here is the link https://api.themoviedb.org/3/genre/movie/list?api_key=<<api_key>>&language=en-US for list of movies
-#somehow grab movie ids from a specific genre- there are genre ids 
-#https://api.themoviedb.org/3/movie/{movie_id}?api_key=<<api_key>>&language=en-US <-- this is a page for a movie
-#get genre ids in a list (/genre/movie/list --> genres["name"] grab the id)
-#find a way to get the genre id to a page with movie ids??? or loop through a 
-#function to grab movie_ids per genre (/movie/{movie_id}/reviews)
-#looping through the movie_ids to get the reviews for that certain genre and then consolidate into an average
-
 def scrape_movies(genre_dict, api_key): #genre_dict is 
     scores_nested = {}
     movies_per_genre = {} #{genre : [[name0, score0], [name1, score1]...]...}
-    for genre_id in genre_dict.keys(): #loop through the id_to_name dict 
+    for genre_id in genre_dict.keys(): 
         url = "https://api.themoviedb.org/3/discover/movie?api_key=" + api_key  + "&with_genres=" + str(genre_id)
         response = requests.get(url)
         dict = json.loads(response.text)
         genre_name = genre_dict[genre_id]
         movies_per_genre[genre_name] = []
         for movie in dict["results"]:
-            #we have genre id
-            #add the reviews {genre : {total:count}, }
-            movies_per_genre[genre_name].append([movie["original_title"], movie["vote_average"]])
+            #if check_dup(movies_per_genre[genre_name], movie["id"]) == False: #account for the duplicate movies?
+            movies_per_genre[genre_name].append([movie["id"], movie["original_title"], movie["vote_average"]]) #add the reviews {genre : {total:count}, }
             if genre_name not in scores_nested:
                 scores_nested[genre_name] = [movie["vote_average"], 1]
             else:
                 scores_nested[genre_name][0] += movie["vote_average"] #update total vote rating
                 scores_nested[genre_name][1] += 1 #update the count
-    print(scores_nested) #should ask if duplicate movies is ok... (if it counts towards 100 things) it should but pain
+    print(scores_nested) #should ask if duplicate movies is ok... but we have like 200 movies in the database?? (there are duplicates in the table gjhfjkg)
     print(movies_per_genre)
     return scores_nested, movies_per_genre
 
+# def check_dup(movies_by_genre_dict, movie_id):
+#     print('++++')
+#     for movie in movies_by_genre_dict:
+#         print(movie[0])
+#         print(movie_id)
+#         print('=======')
+#         if movie[0] == movie_id:
+#             return True
+#         else:
+#             return False
 
 def avg_calc(scores_nested): #scores nested is {genre_name : [total_score, number_movies]}
     avg_dict = {} 
@@ -66,27 +62,28 @@ def avg_calc(scores_nested): #scores nested is {genre_name : [total_score, numbe
     return avg_dict #{genre: avg_rating}
 
 def main():
-    api_key = "key here"
+    api_key = "ccaddcfc821617cf6afe4ed671bc203a"
     id_to_name, name_to_id = get_genre_ids(api_key)
-    # print(id_to_name)
-    # print("=====")
-    # print(name_to_id)
     scores_nested, movies_per_genre = scrape_movies(id_to_name, api_key)
-    #scores_nested, movies_per_genre = scrape_movies(id_to_name, api_key)
-    #print(len(movies_per_genre))
     avg_calc_dict = avg_calc(scores_nested)
 
     conn = sqlite3.connect('movies.db')
     c = conn.cursor()
     #claims that the table already exists...
-    c.execute('''CREATE TABLE IF NOT EXISTS genre_averages (id integer, genre TEXT, score NUMERIC)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS movies (id integer, name TEXT, genre TEXT, score NUMERIC)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS Genre_averages (id INTEGER, genre TEXT, score NUMERIC)''')
     genre_list = ["Horror", "Thriller", "Comedy", "Romance", "Action"]
-    i = 0
     for genre in genre_list: #genre should be the genre name
-            c.execute("INSERT OR IGNORE INTO genre_averages VALUES (?, ?, ?)", (name_to_id[genre], genre, avg_calc_dict[genre]))
-            c.execute("INSERT OR IGNORE INTO movies VALUES (?,?,?,?)", (i, movies_per_genre[genre][i][0], genre, movies_per_genre[genre][i][1])) #how much does the id matter :)
-            i += 1
+            print(name_to_id[genre])
+            print(genre)
+            print(avg_calc_dict[genre])
+            print('===')
+            c.execute("INSERT OR IGNORE INTO Genre_averages VALUES (?, ?, ?)", (name_to_id[genre], genre, avg_calc_dict[genre]))
+    conn.commit()
+
+    c.execute('''CREATE TABLE IF NOT EXISTS Movies (id INTEGER, name TEXT, genre TEXT, score NUMERIC)''')
+    for genre in genre_list:
+        for movie in movies_per_genre[genre]:
+            c.execute("INSERT OR IGNORE INTO Movies VALUES (?, ?, ?)", (movie[1], genre, movie[2],)) #how much does the id matter :)
     conn.commit()
         
 if __name__ == "__main__":
