@@ -64,48 +64,53 @@ def main():
     genre_list = ["Horror", "Thriller", "Comedy", "Romance", "Action"]
     id_to_name, name_to_id = get_genre_ids(api_key)
     scores_nested, movies_per_genre = get_movies(api_key, int(genreId))
-    avg_calc_dict = avg_calc(scores_nested)
-
-    # if len(avg_calc_dict) != 5:
-    #     print('length not 5')
-    # for genre in genre_list: 
-    #     if len(movies_per_genre[genre]) != 20:
-    #         print('not length 20')
+    # avg_calc_dict = avg_calc(scores_nested)
 
     conn = sqlite3.connect('ratings.db')
     c = conn.cursor()
-    #claims that the table already exists...
-    c.execute('''CREATE TABLE IF NOT EXISTS Genre_averages (id INTEGER, genre TEXT, score NUMERIC)''')
-    c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Genre_averages_id ON Genre_averages (id)''')
-    c.execute("INSERT OR IGNORE INTO Genre_averages VALUES (?, ?, ?)", (genreId, genre_list[int(genreId)], avg_calc_dict[genre_list[int(genreId)]]))
-
-    # c.execute('''DROP TABLE IF EXISTS genre_ids''')
-    c.execute("CREATE TABLE IF NOT EXISTS genre_ids (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)")
+    c.execute("CREATE TABLE IF NOT EXISTS movie_ratings (id INTEGER, name TEXT, score NUMERIC)")
     for movie in movies_per_genre[genre_list[int(genreId)]]:
-        c.execute("INSERT OR IGNORE INTO genre_ids VALUES (?, ?, ?, ?)", (movie[0], movie[1], int(genreId), movie[2]))
+        c.execute("INSERT OR IGNORE INTO movie_ratings VALUES ( ?, ?, ?)", (movie[0], movie[1], movie[2]))
+
+    c.execute("CREATE TABLE IF NOT EXISTS movie_genres (id INTEGER, name TEXT, genre_id INTEGER, genre TEXT)")
+    for movie in movies_per_genre[genre_list[int(genreId)]]:
+        c.execute("INSERT OR IGNORE INTO movie_genres VALUES (?, ?, ?, ?)", (movie[0], movie[1], int(genreId), genre_list[int(genreId)]))
 
     #create a table for each genre
-    c.execute('''CREATE TABLE IF NOT EXISTS Horror (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
-    c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Horror_id ON Horror (id)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS Thriller (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
-    c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Thriller_id ON Thriller (id)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS Comedy (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
-    c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Comedy_id ON Comedy (id)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS Romance (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
-    c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Romance_id ON Romance (id)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS Action (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
-    for movie in movies_per_genre[genre_list[int(genreId)]]:
-        #insert into different tables based on genre if statements
-        if genre_list[int(genreId)] == 'Horror':
-            c.execute("INSERT OR IGNORE INTO Horror VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
-        elif genre_list[int(genreId)] == 'Thriller':
-            c.execute("INSERT OR IGNORE INTO Thriller VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
-        elif genre_list[int(genreId)] == 'Comedy':
-            c.execute("INSERT OR IGNORE INTO Comedy VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
-        elif genre_list[int(genreId)] == 'Romance':
-            c.execute("INSERT OR IGNORE INTO Romance VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
-        elif genre_list[int(genreId)] == 'Action':
-            c.execute("INSERT OR IGNORE INTO Action VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
+    # c.execute('''CREATE TABLE IF NOT EXISTS Horror (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
+    # c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Horror_id ON Horror (id)''')
+    # c.execute('''CREATE TABLE IF NOT EXISTS Thriller (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
+    # c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Thriller_id ON Thriller (id)''')
+    # c.execute('''CREATE TABLE IF NOT EXISTS Comedy (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
+    # c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Comedy_id ON Comedy (id)''')
+    # c.execute('''CREATE TABLE IF NOT EXISTS Romance (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
+    # c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Romance_id ON Romance (id)''')
+    # c.execute('''CREATE TABLE IF NOT EXISTS Action (id INTEGER, name TEXT, genre_id INTEGER, score NUMERIC)''')
+    # for movie in movies_per_genre[genre_list[int(genreId)]]:
+    #     #insert into different tables based on genre if statements
+    #     if genre_list[int(genreId)] == 'Horror':
+    #         c.execute("INSERT OR IGNORE INTO Horror VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
+    #     elif genre_list[int(genreId)] == 'Thriller':
+    #         c.execute("INSERT OR IGNORE INTO Thriller VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
+    #     elif genre_list[int(genreId)] == 'Comedy':
+    #         c.execute("INSERT OR IGNORE INTO Comedy VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
+    #     elif genre_list[int(genreId)] == 'Romance':
+    #         c.execute("INSERT OR IGNORE INTO Romance VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
+    #     elif genre_list[int(genreId)] == 'Action':
+    #         c.execute("INSERT OR IGNORE INTO Action VALUES (?, ?, ?, ?)", (movie[0], movie[1], name_to_id[genre_list[int(genreId)]], movie[2],))
+    #claims that the table already exists...
+    # c.execute('''CREATE TABLE IF NOT EXISTS Genre_averages (id INTEGER, genre TEXT, score NUMERIC)''')
+    # c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS Genre_averages_id ON Genre_averages (id)''')
+    # c.execute("INSERT OR IGNORE INTO Genre_averages VALUES (?, ?, ?)", (genreId, genre_list[int(genreId)], avg_calc_dict[genre_list[int(genreId)]]))
+
+    # c.execute('''DROP TABLE IF EXISTS genre_ids''')
+    # c.execute('''DROP TABLE IF EXISTS Genre_averages''')
+    # c.execute('''DROP TABLE IF EXISTS Horror''')
+    # c.execute('''DROP TABLE IF EXISTS Thriller''')
+    # c.execute('''DROP TABLE IF EXISTS Comedy''')
+    # c.execute('''DROP TABLE IF EXISTS Romance''')
+    # c.execute('''DROP TABLE IF EXISTS Action''')
+    # c.execute('''DROP TABLE IF EXISTS scores''')
     conn.commit()
     conn.close()
         
