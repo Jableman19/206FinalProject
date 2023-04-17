@@ -4,18 +4,20 @@ import time
 import json
 import sqlite3
 import re
+import sys
 
-def GetGameList(APIKEY):
+def GetGameList(APIKEY, genNum):
     gamesDict = {}
-    genres = [("Horror", 83 ), ("Thriller", 123), ("Comedy", 120), ("Romance",122), ("Action", 1)]
-    for genre in genres:
-        #wait 1 second to avoid rate limiting
-        time.sleep(1)
-        url = "https://api.mobygames.com/v1/games?format=id&genre=" + str(genre[1]) + "&limit=100&api_key=" + APIKEY
-        response = requests.get(url)
-        #make response to dictionary format
-        newDict = json.loads(response.text)
-        gamesDict[genre[0]] = newDict['games']
+    genres = [("Horror", 83), ("Thriller", 123), ("Comedy", 120), ("Romance",122), ("Action", 1)]
+    #pick genre based on user input
+    genre = genres[genNum]
+    #wait 1 second to avoid rate limiting
+    time.sleep(1)
+    url = "https://api.mobygames.com/v1/games?format=id&genre=" + str(genre[1]) + "&limit=25&api_key=" + APIKEY
+    response = requests.get(url)
+    #make response to dictionary format
+    newDict = json.loads(response.text)
+    gamesDict[genre[0]] = newDict['games']
     return gamesDict
 
 def scrapeGenre(gameList):
@@ -45,9 +47,9 @@ def scrapeGenre(gameList):
 
 def main():
 
-    APIKEY = "YOUR API KEY HERE"
-    
-    gamesByGenre = GetGameList(APIKEY)
+    APIKEY = "moby_QgxIRNhIzjq9gW7CgE2PM8jv8y0"
+    genreNum = sys.argv[1]
+    gamesByGenre = GetGameList(APIKEY, int(genreNum))
     print(gamesByGenre)
     # iterate through dictionary and scrape the score for each game
     scoresByGenre = {}
@@ -56,13 +58,15 @@ def main():
     print(scoresByGenre)
 
     #make database for games listing game id, genre, and score
-    conn = sqlite3.connect('games.db')
+    conn = sqlite3.connect('ratings.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE games (id integer, genre text, score integer)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS games (id integer, genre text, score integer, genreID integer)''')
+    c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS id ON games (id)''')
     for genre in scoresByGenre:
         i = 0
         for score in scoresByGenre[genre]:
-            c.execute("INSERT OR IGNORE INTO games VALUES (?, ?, ?)", (gamesByGenre[genre][i], genre, score))
+
+            c.execute("INSERT OR IGNORE INTO games VALUES (?, ?, ?, ?)", (gamesByGenre[genre][i], genre, score, int(genreNum)))
             i += 1
     conn.commit()
 
