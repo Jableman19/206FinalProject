@@ -47,7 +47,7 @@ def scrapeGenre(gameList):
 
 def main():
 
-    APIKEY = "moby_QgxIRNhIzjq9gW7CgE2PM8jv8y0"
+    APIKEY = "API_KEY_HERE"
     genreNum = sys.argv[1]
     gamesByGenre = GetGameList(APIKEY, int(genreNum))
     print(gamesByGenre)
