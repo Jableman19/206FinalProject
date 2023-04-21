@@ -21,7 +21,7 @@ def main():
     # conn.commit()
 
     
-    i = 0
+    i = -1
     c.execute('''CREATE TABLE IF NOT EXISTS books (title text, genre text, score integer, genreID integer)''')
     #select all books with the genre of action
     c.execute('''SELECT * FROM books WHERE genre = "Action"''')
@@ -45,6 +45,13 @@ def main():
         i = 0
     c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS titleIndex ON books (title)''')
     genreNum = i
+    if(genreNum == -1):
+        barplot.create_games_plot()
+        barplot.create_books_plot()
+        barplot.create_movies_plot()
+        barplot.create_genre_ratings_plot()
+        barplot.create_media_types_plot()
+        return
     booksByGenre = goodreads.scrapeBooks(int(genreNum))
     for genre in booksByGenre:
         for book in booksByGenre[genre]:
