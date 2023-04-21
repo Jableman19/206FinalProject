@@ -12,24 +12,6 @@ def get_data_from_db(db_file, table_name, genre_col_name, genre):
     conn.close()
     return scores
 
-
-def create_bar_plot(db_file, table_name, genre_col_name, title):
-    genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-    for ax, media_type in zip(axs, ['Games', 'Movies', 'Books']):
-        ax.set_title(f'Average {media_type} Scores by Genre')
-        ax.set_xlabel('Genre')
-        ax.set_ylabel('Score (out of 10)')
-        ax.set_ylim(0, 10)
-        for genre in genres:
-            scores = get_data_from_db(db_file, table_name, genre_col_name, genre)
-            if scores:
-                avg_score = round(sum(scores)/len(scores), 2)
-                ax.bar(genre, avg_score)
-                ax.text(genre, avg_score, str(avg_score), ha='center', va='bottom')
-    plt.suptitle(title, fontsize=16)
-    plt.show()
-
 def create_games_plot():
     genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
     # create a figure with 1 subplot
