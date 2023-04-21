@@ -21,7 +21,7 @@ def main():
     # conn.commit()
 
     
-        
+    i = 0
     c.execute('''CREATE TABLE IF NOT EXISTS books (title text, genre text, score integer, genreID integer)''')
     #select all books with the genre of action
     c.execute('''SELECT * FROM books WHERE genre = "Action"''')
