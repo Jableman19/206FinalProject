@@ -22,25 +22,25 @@ def main():
 
     
     i = -1
-    c.execute('''CREATE TABLE IF NOT EXISTS books (title text, genre text, score integer, genreID integer)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS books (title text, score integer, genreID integer)''')
     #select all books with the genre of action
-    c.execute('''SELECT * FROM books WHERE genre = "Action"''')
+    c.execute('''SELECT * FROM books WHERE genreID = 4''')
     if len(c.fetchall()) == 0:
         i = 4
     #select all books with the genre of romance
-    c.execute('''SELECT * FROM books WHERE genre = "Romance"''')
+    c.execute('''SELECT * FROM books WHERE genreID = 3''')
     if len(c.fetchall()) == 0:
         i = 3
     #select all books with the genre of comedy
-    c.execute('''SELECT * FROM books WHERE genre = "Comedy"''')
+    c.execute('''SELECT * FROM books WHERE genreID = 2''')
     if len(c.fetchall()) == 0:
         i = 2
     #select all books with the genre of thriller
-    c.execute('''SELECT * FROM books WHERE genre = "Thriller"''')
+    c.execute('''SELECT * FROM books WHERE genreID = 1''')
     if len(c.fetchall()) == 0:
         i = 1
     #select all books with the genre of horror
-    c.execute('''SELECT * FROM books WHERE genre = "Horror"''')
+    c.execute('''SELECT * FROM books WHERE genreID = 0''')
     if len(c.fetchall()) == 0:
         i = 0
     c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS titleIndex ON books (title)''')
@@ -55,7 +55,7 @@ def main():
     booksByGenre = goodreads.scrapeBooks(int(genreNum))
     for genre in booksByGenre:
         for book in booksByGenre[genre]:
-            c.execute("INSERT OR IGNORE INTO books VALUES (?, ?, ?, ?)", (book[0], genre, book[1], int(genreNum)))
+            c.execute("INSERT OR IGNORE INTO books VALUES (?, ?, ?)", (book[0], book[1], int(genreNum)))
     conn.commit()
     
     APIKEY = "moby_QgxIRNhIzjq9gW7CgE2PM8jv8y0"
@@ -63,13 +63,13 @@ def main():
     scoresByGenre = {}
     for genre in gamesByGenre:
         scoresByGenre[genre] = mobyGames.scrapeGenre(gamesByGenre[genre])
-    c.execute('''CREATE TABLE IF NOT EXISTS games (id integer, genre text, score integer, genreID integer)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS games (id integer, score integer, genreID integer)''')
     c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS id ON games (id)''')
     for genre in scoresByGenre:
         i = 0
         for score in scoresByGenre[genre]:
 
-            c.execute("INSERT OR IGNORE INTO games VALUES (?, ?, ?, ?)", (gamesByGenre[genre][i], genre, score, int(genreNum)))
+            c.execute("INSERT OR IGNORE INTO games VALUES (?, ?, ?)", (gamesByGenre[genre][i], score, int(genreNum)))
             i += 1
     conn.commit()
 
@@ -85,9 +85,9 @@ def main():
     for movie in movies_per_genre[genre_list[int(genreNum)]]:
         c.execute("INSERT OR IGNORE INTO movie_ratings VALUES ( ?, ?, ?)", (movie[0], movie[1], movie[2]))
 
-    c.execute("CREATE TABLE IF NOT EXISTS movie_genres (id INTEGER, name TEXT, genre_id INTEGER, genre TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS movie_genres (id INTEGER, name TEXT, genre_id INTEGER)")
     for movie in movies_per_genre[genre_list[int(genreNum)]]:
-        c.execute("INSERT OR IGNORE INTO movie_genres VALUES (?, ?, ?, ?)", (movie[0], movie[1], int(genreNum), genre_list[int(genreNum)]))
+        c.execute("INSERT OR IGNORE INTO movie_genres VALUES (?, ?, ?)", (movie[0], movie[1], int(genreNum)))
     conn.commit()
 
     conn.close()

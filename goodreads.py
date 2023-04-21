@@ -47,11 +47,11 @@ def main():
     booksByGenre = scrapeBooks(int(genreNum))
     conn = sqlite3.connect('ratings.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS books (title text, genre text, score integer, genreID integer)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS books (title text, score integer, genreID integer)''')
     c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS titleIndex ON books (title)''')
     for genre in booksByGenre:
         for book in booksByGenre[genre]:
-            c.execute("INSERT OR IGNORE INTO books VALUES (?, ?, ?, ?)", (book[0], genre, book[1], int(genreNum)))
+            c.execute("INSERT OR IGNORE INTO books VALUES (?, ?, ?)", (book[0], book[1], int(genreNum)))
     conn.commit()
 
         

@@ -60,13 +60,13 @@ def main():
     #make database for games listing game id, genre, and score
     conn = sqlite3.connect('ratings.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS games (id integer, genre text, score integer, genreID integer)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS games (id integer, score integer, genreID integer)''')
     c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS id ON games (id)''')
     for genre in scoresByGenre:
         i = 0
         for score in scoresByGenre[genre]:
 
-            c.execute("INSERT OR IGNORE INTO games VALUES (?, ?, ?, ?)", (gamesByGenre[genre][i], genre, score, int(genreNum)))
+            c.execute("INSERT OR IGNORE INTO games VALUES (?, ?, ?)", (gamesByGenre[genre][i], score, int(genreNum)))
             i += 1
     conn.commit()
 

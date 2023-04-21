@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 def create_games_plot():
-    genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
+    genres = [('Horror', 0), ('Thriller', 1), ('Comedy', 2), ('Romance', 3), ('Action', 4)]
     # create a figure with 1 subplot
     fig, ax = plt.subplots(1, 1, figsize=(15, 5))
     # set the title of the plot
@@ -20,17 +20,17 @@ def create_games_plot():
     c = conn.cursor()
     #select score from games where genre = genre
     for genre in genres:
-        c.execute("SELECT score FROM games WHERE genre = ?", (genre,))
+        c.execute("SELECT score FROM games WHERE genreID = ?", (genre[1],))
         scores = [score[0]/10 for score in c.fetchall()]
         if scores:
             avg_score = round(sum(scores)/len(scores), 2)
-            ax.bar(genre, avg_score)
-            ax.text(genre, avg_score, str(avg_score), ha='center', va='bottom')
+            ax.bar(genre[0], avg_score)
+            ax.text(genre[0], avg_score, str(avg_score), ha='center', va='bottom')
     plt.show()
     c.close()
 
 def create_books_plot():
-    genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
+    genres = [('Horror', 0), ('Thriller', 1), ('Comedy', 2), ('Romance', 3), ('Action', 4)]
     # create a figure with 1 subplot
     fig, ax = plt.subplots(1, 1, figsize=(15, 5))
     # set the title of the plot
@@ -46,17 +46,17 @@ def create_books_plot():
     c = conn.cursor()
     #select score from games where genre = genre
     for genre in genres:
-        c.execute("SELECT score FROM books WHERE genre = ?", (genre,))
+        c.execute("SELECT score FROM books WHERE genreID = ?", (genre[1],))
         scores = [score[0]/10 for score in c.fetchall()]
         if scores:
             avg_score = round(sum(scores)/len(scores), 2)
-            ax.bar(genre, avg_score)
-            ax.text(genre, avg_score, str(avg_score), ha='center', va='bottom')
+            ax.bar(genre[0], avg_score)
+            ax.text(genre[0], avg_score, str(avg_score), ha='center', va='bottom')
     plt.show()
     c.close()
 
 def create_movies_plot():
-    genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
+    genres = [('Horror', 0), ('Thriller', 1), ('Comedy', 2), ('Romance', 3), ('Action', 4)]
     # create a figure with 1 subplot
     fig, ax = plt.subplots(1, 1, figsize=(15, 5))
     # set the title of the plot
@@ -72,12 +72,12 @@ def create_movies_plot():
     c = conn.cursor()
     #select score from games where genre = genre
     for genre in genres:
-        c.execute("SELECT movie_ratings.score FROM movie_ratings JOIN movie_genres ON movie_ratings.id = movie_genres.id WHERE movie_genres.genre = ?", (genre,))
+        c.execute("SELECT movie_ratings.score FROM movie_ratings JOIN movie_genres ON movie_ratings.id = movie_genres.id WHERE movie_genres.genre_id = ?", (genre[1],))
         scores = [score[0] for score in c.fetchall()]
         if scores:
             avg_score = round(sum(scores)/len(scores), 2)
-            ax.bar(genre, avg_score)
-            ax.text(genre, avg_score, str(avg_score), ha='center', va='bottom')
+            ax.bar(genre[0], avg_score)
+            ax.text(genre[0], avg_score, str(avg_score), ha='center', va='bottom')
     plt.show()
     c.close()
 
@@ -87,7 +87,7 @@ def plot_all_together():
     return
 
 def create_genre_ratings_plot():
-    genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
+    genres = [('Horror', 0), ('Thriller', 1), ('Comedy', 2), ('Romance', 3), ('Action', 4)]
     ig, ax = plt.subplots(1, 1, figsize=(15, 5))
     # set the title of the plot
     ax.set_title('Average scores by Genre Across all media types')
@@ -102,21 +102,22 @@ def create_genre_ratings_plot():
     c = conn.cursor()
     for genre in genres:
         #select scores from tables games, books, genre_ids
-        c.execute("SELECT score FROM games WHERE genre = ?", (genre,))
+        c.execute("SELECT score FROM games WHERE genreID = ?", (genre[1],))
         scores = [score[0]/10 for score in c.fetchall()]
-        c.execute("SELECT score FROM books WHERE genre = ?", (genre,))
+        c.execute("SELECT score FROM books WHERE genreID = ?", (genre[1],))
         scores += [score[0]/10 for score in c.fetchall()]
-        c.execute("SELECT movie_ratings.score FROM movie_ratings JOIN movie_genres ON movie_ratings.id = movie_genres.id WHERE movie_genres.genre = ?", (genre,))
+        c.execute("SELECT movie_ratings.score FROM movie_ratings JOIN movie_genres ON movie_ratings.id = movie_genres.id WHERE movie_genres.genre_id = ?", (genre[1],))
         scores += [score[0] for score in c.fetchall()]
         if scores:
             avg_score = round(sum(scores)/len(scores), 2)
-            ax.bar(genre, avg_score)
-            ax.text(genre, avg_score, str(avg_score), ha='center', va='bottom')
+            ax.bar(genre[0], avg_score)
+            ax.text(genre[0], avg_score, str(avg_score), ha='center', va='bottom')
     plt.show()
     c.close()
 
 def create_media_types_plot():
-    genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
+    genres = [('Horror', 0), ('Thriller', 1), ('Comedy', 2), ('Romance', 3), ('Action', 4)]
+    labels = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
     ig, ax = plt.subplots(1, 1, figsize=(15, 5))
     # set the title of the plot
     ax.set_title('Average scores by Genre and Media Type')
@@ -133,11 +134,11 @@ def create_media_types_plot():
     data = {'Games': {}, 'Books': {}, 'Movies': {}}
     for genre in genres:
         #select scores from tables games, books, genre_ids
-        c.execute("SELECT score FROM games WHERE genre = ?", (genre,))
+        c.execute("SELECT score FROM games WHERE genreID = ?", (genre[1],))
         gameScores = [score[0]/10 for score in c.fetchall()]
-        c.execute("SELECT score FROM books WHERE genre = ?", (genre,))
+        c.execute("SELECT score FROM books WHERE genreID = ?", (genre[1],))
         bookScores = [score[0]/10 for score in c.fetchall()]
-        c.execute("SELECT movie_ratings.score FROM movie_ratings JOIN movie_genres ON movie_ratings.id = movie_genres.id WHERE movie_genres.genre = ?", (genre,))
+        c.execute("SELECT movie_ratings.score FROM movie_ratings JOIN movie_genres ON movie_ratings.id = movie_genres.id WHERE movie_genres.genre_id = ?", (genre[1],))
         movieScores = [score[0] for score in c.fetchall()]
         #create a bar chart where there are 5 groupings of 3 bars each.
         #each grouping will be a genre and the 3 bars will be the average score for each media type
@@ -145,9 +146,9 @@ def create_media_types_plot():
             avg_game_score = round(sum(gameScores)/len(gameScores), 2)
             avg_book_score = round(sum(bookScores)/len(bookScores), 2)
             avg_movie_score = round(sum(movieScores)/len(movieScores), 2)
-            data['Games'][genre] = avg_game_score
-            data['Books'][genre] = avg_book_score
-            data['Movies'][genre] = avg_movie_score
+            data['Games'][genre[0]] = avg_game_score
+            data['Books'][genre[0]] = avg_book_score
+            data['Movies'][genre[0]] = avg_movie_score
     #create a bar chart where there are 5 groupings of 3 bars each.
     #each grouping will be a genre and the 3 bars will be the average score for each media type
     x = np.arange(len(genres))  # the label locations
@@ -159,7 +160,7 @@ def create_media_types_plot():
     ax.set_ylabel('Scores')
     ax.set_title('Scores by Genre and Media Type')
     ax.set_xticks(x)
-    ax.set_xticklabels(genres)
+    ax.set_xticklabels(labels)
     ax.legend()
     def autolabel(rects):
         """Attach a text label above each bar in *rects*, displaying its height."""

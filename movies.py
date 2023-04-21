@@ -52,9 +52,9 @@ def main():
     for movie in movies_per_genre[genre_list[int(genreId)]]:
         c.execute("INSERT OR IGNORE INTO movie_ratings VALUES ( ?, ?, ?)", (movie[0], movie[1], movie[2]))
 
-    c.execute("CREATE TABLE IF NOT EXISTS movie_genres (id INTEGER, name TEXT, genre_id INTEGER, genre TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS movie_genres (id INTEGER, name TEXT, genre_id INTEGER)")
     for movie in movies_per_genre[genre_list[int(genreId)]]:
-        c.execute("INSERT OR IGNORE INTO movie_genres VALUES (?, ?, ?, ?)", (movie[0], movie[1], int(genreId), genre_list[int(genreId)]))
+        c.execute("INSERT OR IGNORE INTO movie_genres VALUES (?, ?, ?)", (movie[0], movie[1], int(genreId)))
 
     conn.commit()
     conn.close()
