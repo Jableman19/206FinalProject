@@ -12,18 +12,6 @@ import sys
 #calculate the average of each genre in a separate function
 #plot it
 
-def get_genre_ids(api_key):
-    genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
-    response = requests.get(url="https://api.themoviedb.org/3/genre/movie/list?api_key=" + api_key + "&language=en-US")
-    dict = json.loads(response.text)
-    id_to_name = {}
-    name_to_id = {}
-    for genre in dict['genres']:
-        if genre['name'] in genres:
-            id_to_name[genre['id']] = genre['name'] 
-            name_to_id[genre['name']] = genre['id'] 
-    return id_to_name, name_to_id
-
 #DO UNIQUE MOVIES -> if the movie is already in the thing then don't count it-> switch pages and grab the first 100 unique movies :)
 def get_movies( api_key, genreID): #genre_dict is 
     scores_nested = {}
@@ -62,7 +50,6 @@ def main():
     genreId = sys.argv[1]
     api_key = "API_KEY_HERE"
     genre_list = ["Horror", "Thriller", "Comedy", "Romance", "Action"]
-    id_to_name, name_to_id = get_genre_ids(api_key)
     scores_nested, movies_per_genre = get_movies(api_key, int(genreId))
     # avg_calc_dict = avg_calc(scores_nested)
 
