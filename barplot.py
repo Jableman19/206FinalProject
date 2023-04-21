@@ -149,6 +149,9 @@ def create_media_types_plot():
             data['Games'][genre[0]] = avg_game_score
             data['Books'][genre[0]] = avg_book_score
             data['Movies'][genre[0]] = avg_movie_score
+            #write over the file with the new data
+            with open('calculations.txt', 'a') as f:
+                f.write(f"{genre[0]}: {'average game score: ', avg_game_score, '(out of ', len(gameScores), ' games)'}, {'average book score: ', avg_book_score, '(out of ', len(bookScores), ' books)'}, {'average movie score: ', avg_movie_score, '(out of ', len(movieScores), ' movies)'}\n")
     #create a bar chart where there are 5 groupings of 3 bars each.
     #each grouping will be a genre and the 3 bars will be the average score for each media type
     x = np.arange(len(genres))  # the label locations

@@ -81,6 +81,12 @@ def main():
 
     conn = sqlite3.connect('ratings.db')
     c = conn.cursor()
+    id_list = [27, 53, 35, 10749, 28]
+    c.execute("CREATE TABLE IF NOT EXISTS genre_table (id INT, new_id INT, genre TEXT)")
+    c.execute('''CREATE UNIQUE INDEX IF NOT EXISTS id ON genre_table (id)''')
+    for i in range(0,5):
+        c.execute("INSERT OR IGNORE INTO genre_table VALUES (?, ?, ?)", (id_list[i], i, genre_list[i]))
+    
     c.execute("CREATE TABLE IF NOT EXISTS movie_ratings (id INTEGER, name TEXT, score NUMERIC)")
     for movie in movies_per_genre[genre_list[int(genreNum)]]:
         c.execute("INSERT OR IGNORE INTO movie_ratings VALUES ( ?, ?, ?)", (movie[0], movie[1], movie[2]))

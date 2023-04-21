@@ -1,0 +1,5 @@
+Horror: ('average game score: ', 7.46, '(out of ', 25, ' games)'), ('average book score: ', 8.0, '(out of ', 25, ' books)'), ('average movie score: ', 4.43, '(out of ', 20, ' movies)')
+Thriller: ('average game score: ', 7.95, '(out of ', 21, ' games)'), ('average book score: ', 7.99, '(out of ', 25, ' books)'), ('average movie score: ', 5.95, '(out of ', 20, ' movies)')
+Comedy: ('average game score: ', 7.64, '(out of ', 25, ' games)'), ('average book score: ', 8.09, '(out of ', 25, ' books)'), ('average movie score: ', 5.9, '(out of ', 20, ' movies)')
+Romance: ('average game score: ', 7.45, '(out of ', 11, ' games)'), ('average book score: ', 7.99, '(out of ', 25, ' books)'), ('average movie score: ', 5.7, '(out of ', 20, ' movies)')
+Action: ('average game score: ', 6.99, '(out of ', 17, ' games)'), ('average book score: ', 8.44, '(out of ', 23, ' books)'), ('average movie score: ', 5.92, '(out of ', 20, ' movies)')
