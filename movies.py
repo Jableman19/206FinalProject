@@ -37,14 +37,7 @@ def get_movies( api_key, genreID): #genre_dict is
                 scores_nested[genre_name][1] += 1 #update the count
     print(scores_nested) #should ask if duplicate movies is ok... but we have like 200 movies in the database?? (there are duplicates in the table gjhfjkg)
     print(movies_per_genre)
-    return scores_nested, movies_per_genre
-
-def avg_calc(scores_nested): #scores nested is {genre_name : [total_score, number_movies]}
-    avg_dict = {} 
-    for name, values in scores_nested.items():
-        total, count = values
-        avg_dict[name] = total / count
-    return avg_dict #{genre: avg_rating}
+    return movies_per_genre
 
 def main():
     genreId = sys.argv[1]
