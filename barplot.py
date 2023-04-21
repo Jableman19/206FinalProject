@@ -3,15 +3,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-
-def get_data_from_db(db_file, table_name, genre_col_name, genre):
-    conn = sqlite3.connect(db_file)
-    c = conn.cursor()
-    c.execute("SELECT score FROM {} WHERE {}=?".format(table_name, genre_col_name), (genre,))
-    scores = [score[0]/10 for score in c.fetchall()]
-    conn.close()
-    return scores
-
 def create_games_plot():
     genres = ['Horror', 'Thriller', 'Comedy', 'Romance', 'Action']
     # create a figure with 1 subplot
