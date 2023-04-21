@@ -76,8 +76,7 @@ def main():
     
     api_key = "ccaddcfc821617cf6afe4ed671bc203a"
     genre_list = ["Horror", "Thriller", "Comedy", "Romance", "Action"]
-    id_to_name, name_to_id = movies.get_genre_ids(api_key)
-    scores_nested, movies_per_genre = movies.get_movies(api_key, int(genreNum))
+    movies_per_genre = movies.get_movies(api_key, int(genreNum))
     # avg_calc_dict = avg_calc(scores_nested)
 
     conn = sqlite3.connect('ratings.db')
